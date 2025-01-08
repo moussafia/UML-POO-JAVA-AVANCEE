@@ -30,7 +30,7 @@ public class ApplicationEX1 {
 
                 }
 
-            }while (nb != 0);
+            }while (nb != 4);
         }catch (NombreNegatifException e){
             System.out.println("Exception levée : " + e.getMessage());
             System.out.println("Valeur erronée : " + e.getValeurErronee());
