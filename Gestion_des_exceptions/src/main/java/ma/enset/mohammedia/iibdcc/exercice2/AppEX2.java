@@ -2,49 +2,53 @@ package ma.enset.mohammedia.iibdcc.exercice2;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Scanner;
 
 public class AppEX2 {
+    private static final Scanner scanner = new Scanner(System.in);
+    private static List<CompteCourant> compteCourant = new ArrayList<>();
+    
     public static void main(String[] args) {
         try {
-            List<? extends CompteBancaire> compteBancaire = new ArrayList<>();
             int nb;
             do {
                 System.out.println("1.Ajouter un compte: ");
-                System.out.println("2.Ajouter un compte: ");
+                System.out.println("2.Afficher comptes: ");
                 System.out.println("3.Supprimer un compte: ");
-                System.out.println("4.Effectuer des opérations sur les comptes.: ");
+                System.out.println("4.Effectuer des opérations sur les comptes: ");
                 System.out.println("5.Quitter le programme: ");
-                nb = new Scanner(System.in).nextInt();
+                nb = scanner.nextInt();
                 switch (nb) {
                     case 1:
                         System.out.println("------------Ajout des comptes--------------");
                         System.out.println("Enter numero de compte: ");
-                        Long numCompte = new Scanner(System.in).nextLong();
+                        Long numCompte = scanner.nextLong();
                         System.out.println("Enter solde de compte: ");
-                        Double sold = new Scanner(System.in).nextDouble();
+                        Double sold = scanner.nextDouble();
+                        scanner.nextLine();
                         System.out.println("Enter nom titulaire de comptes: ");
-                        String nomTitulaire = new Scanner(System.in).nextLine();
-                        compteBancaire.add(new CompteBancaire(numCompte, sold, nomTitulaire));
+                        String nomTitulaire = scanner.nextLine();
+                        compteCourant.add(new CompteCourant(numCompte, sold, nomTitulaire));
                         break;
                     case 2:
                         System.out.println("------------List des comptes-----------------");
-                        for (CompteBancaire compte : compteBancaire) {
+                        for (CompteCourant compte : compteCourant) {
                             System.out.println(compte);
                         }
                         break;
                     case 3:
                         System.out.println("Enter numero de compte: ");
-                        Long numCompteSupprime = new Scanner(System.in).nextLong();
-                        for (CompteBancaire compte : compteBancaire) {
-                            if (compte.getNumCompte() == numCompteSupprime) {
-                                compteBancaire.remove(compte);
+                        Long numCompteSupprime = scanner.nextLong();
+                        for (CompteCourant compte : compteCourant) {
+                            if (Objects.equals(compte.getNumCompte(), numCompteSupprime)) {
+                                compteCourant.remove(compte);
                                 break;
                             }
                         }
                         break;
                     case 4:
-                        System.out.println("Effectuer des operations sur les comptes: ");
+                        EffectuerOperation(compteCourant);
                         break;
 
                     case 5:
@@ -55,15 +59,15 @@ public class AppEX2 {
 
             }while (nb != 5);
         }catch (FondsInsuffisantsException FIex){
-
-        }catch (RuntimeException ex){
-
-        } catch (Exception e) {
+            System.out.println(FIex.getMessage());
+        }catch (Exception e) {
+            System.out.println(e.getMessage());
 
         }
     }
 
-    private static void EffectuerOperation(List<CompteBancaire> compteBancaire){
+    private static void EffectuerOperation(List<CompteCourant> compteCourant){
+        System.out.println("Effectuer des operations sur les comptes: ");
         int choiseEffectuer;
         do {
             System.out.println("1.diposer un virement: ");
@@ -71,23 +75,23 @@ public class AppEX2 {
             System.out.println("3.verser vers un autre compte: ");
             System.out.println("4.decouvert un montant: ");
             System.out.println("5.epargne un compte: ");
-            System.out.println("6.Quitter le programme: ");
-            choiseEffectuer = new Scanner(System.in).nextInt();
+            System.out.println("6.Quitter le programme d'effectuation des operation bancaire : ");
+            choiseEffectuer = scanner.nextInt();
             switch (choiseEffectuer) {
                 case 1:
-                   diposerMontant(compteBancaire);
+                   diposerMontant(compteCourant);
                    break;
                 case 2:
-                    retraitMontant(compteBancaire);
+                    retraitMontant(compteCourant);
                     break;
                 case 3:
-                    diposerMontant(compteBancaire);
+                    verserVersAutreCompte(compteCourant);
                     break;
                 case 4:
-                    decouverCompte(compteBancaire);
+                    decouverCompte(compteCourant);
                     break;
                 case 5:
-                    diposerMontant(compteBancaire);
+                    epargneCompte(compteCourant);
                     break;
                 case 6:
                     System.out.println("Quitter le programme d'effectuer un operation... ");
@@ -98,14 +102,16 @@ public class AppEX2 {
         }while (choiseEffectuer != 6);
     }
 
-    private static void diposerMontant(List<CompteBancaire> compteBancaire){
+
+
+    private static void diposerMontant(List<CompteCourant> CompteCourant){
         System.out.println("donner le num de compte: ");
-        Long numCompteDiposer = new Scanner(System.in).nextLong();
+        Long numCompteDiposer = scanner.nextLong();
         boolean isCmptExist = false;
-        for (CompteBancaire cp: compteBancaire) {
-            if (cp.getNumCompte() == numCompteDiposer) {
+        for (CompteCourant cp: CompteCourant) {
+            if (cp.getNumCompte().equals(numCompteDiposer)) {
                 System.out.println("donner un montant");
-                double montant = new Scanner(System.in).nextDouble();
+                Double montant = scanner.nextDouble();
                 cp.deposer(montant);
                 isCmptExist = true;
                 break;
@@ -116,14 +122,14 @@ public class AppEX2 {
         }
     }
 
-    private static void retraitMontant(List<CompteBancaire> compteBancaire){
+    private static void retraitMontant(List<CompteCourant> CompteCourant){
         System.out.println("donner le num de compte: ");
-        Long numCompteDiposer = new Scanner(System.in).nextLong();
+        Long numCompteDiposer = scanner.nextLong();
         boolean isCmptExist = false;
-        for (CompteBancaire cp: compteBancaire) {
-            if (cp.getNumCompte() == numCompteDiposer) {
+        for (CompteCourant cp: CompteCourant) {
+            if (cp.getNumCompte().equals(numCompteDiposer)) {
                 System.out.println("donner un montant");
-                double montant = new Scanner(System.in).nextDouble();
+                Double montant = scanner.nextDouble();
                 cp.retraitSolde(montant);
                 isCmptExist = true;
                 break;
@@ -134,39 +140,95 @@ public class AppEX2 {
         }
     }
 
-    private static void decouverCompte(List<CompteCourant> compteCourants){
+    private static void decouverCompte(List<CompteCourant> compteCourantsList){
         System.out.println("donner le num de compte: ");
-        Long numCompteDiposer = new Scanner(System.in).nextLong();
-        boolean isCmptExist = false;
-        for (CompteCourant cp: compteCourants) {
-            if (cp.getNumCompte() == numCompteDiposer) {
+        Long numCompteDiposer = scanner.nextLong();
+        scanner.nextLine();
+        boolean isCmptDecouvertExist = false;
+        for (CompteCourant cp: compteCourantsList) {
+            if (Objects.equals(cp.getNumCompte(), numCompteDiposer)) {
                 System.out.println("donner un montant");
-                double montant = new Scanner(System.in).nextDouble();
-                cp.retraitSolde(montant);
-                isCmptExist = true;
+                Double montant = scanner.nextDouble();
+                scanner.nextLine();
+                System.out.println("donner la valeur du decouvert montant");
+                Double decouvetMt = scanner.nextDouble();
+                scanner.nextLine();
+                cp.retraitSolde(montant, decouvetMt);
+                isCmptDecouvertExist = true;
                 break;
             }
         }
-        if (!isCmptExist) {
+        if (!isCmptDecouvertExist) {
             System.out.println("cette compte n'existe pas");
         }
     }
 
-    private static void epargneCompte(List<CompteEpargne> compteEpargnes){
+    private static void epargneCompte(List<CompteCourant> compteCourantList){
         System.out.println("donner le num de compte: ");
-        Long numCompteDiposer = new Scanner(System.in).nextLong();
-        boolean isCmptExist = false;
-        for (CompteEpargne cp: compteEpargnes) {
-            if (cp.getNumCompte() == numCompteDiposer) {
-                System.out.println("donner un montant");
-                double montant = new Scanner(System.in).nextDouble();
-                cp.genererInterets();
-                isCmptExist = true;
+        Long numCompteDiposer = scanner.nextLong();
+        scanner.nextLine();
+        boolean isCmptEprgneExist = false;
+        for (CompteEpargne cp: compteCourantList) {
+            if (Objects.equals(cp.getNumCompte(), numCompteDiposer)) {
+                System.out.println("donner taux d'interet pour cette compte: " + cp.getNomTitulaire());
+                Double taux = scanner.nextDouble();
+                cp.genererInterets(taux);
+                isCmptEprgneExist = true;
+                System.out.println("taux d'interet a ete ajouté en success ....");
                 break;
             }
         }
-        if (!isCmptExist) {
+        if (!isCmptEprgneExist) {
             System.out.println("cette compte n'existe pas");
         }
     }
+
+    private static void verserVersAutreCompte(List<CompteCourant> compteCourant) {
+
+            CompteCourant compteDest =  getNumDestinataire();
+
+            if(compteDest != null){
+                transfererMoney(compteDest);
+            }else{
+                System.out.println("compte destinataire n'existe pas");
+            }
+
+    }
+
+    private static CompteCourant getNumDestinataire() {
+        CompteCourant cmptEpr = null;
+        System.out.println("donner le numero de distinataire ");
+        Long numDes = scanner.nextLong();
+        scanner.nextLine();
+        for (CompteCourant cp: compteCourant) {
+            if (Objects.equals(cp.getNumCompte(), numDes)) {
+                cmptEpr = cp;
+                System.out.println("compte desitinataire touvez en success ....");
+                break;
+            }
+        }
+        return cmptEpr;
+    }
+    private static void transfererMoney(CompteCourant compteDest){
+        System.out.println("donner votre compte ");
+        Long compteEmtt = scanner.nextLong();
+        scanner.nextLine();
+        boolean isCmptEprgneExist = false;
+        for (CompteCourant cp: compteCourant) {
+            if (Objects.equals(cp.getNumCompte(), compteEmtt)) {
+                System.out.println("donner le montant que vous voullez de faire transfere vers compte " + compteDest.getNumCompte());
+                Double mt = scanner.nextDouble();
+                scanner.nextLine();
+                cp.Transfert(mt, compteDest);
+                isCmptEprgneExist = true;
+                System.out.println("l'operation transfer fait en success ....");
+                break;
+            }
+        }
+        if (!isCmptEprgneExist) {
+            System.out.println(" compte destinataire n'existe pas");
+        }
+    }
+
+    
 }

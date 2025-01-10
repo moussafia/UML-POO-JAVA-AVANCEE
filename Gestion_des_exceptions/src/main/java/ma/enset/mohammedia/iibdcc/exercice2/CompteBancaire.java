@@ -32,7 +32,7 @@ public class CompteBancaire {
     }
 
     public void retraitSolde(Double montant) {
-        if(this.solde < montant){
+        if(this.solde.compareTo(montant) < 0 ){
             throw new FondsInsuffisantsException("solde insuffisant", numCompte);
         }
         this.solde -= montant;
@@ -40,7 +40,7 @@ public class CompteBancaire {
     }
 
     public void deposer(Double montant){
-        if(montant <= 0){
+        if(montant.compareTo(0.0) <= 0){
             throw new FondsInsuffisantsException("montant doit etre positive strictement", numCompte);
         }
         solde += montant;
@@ -51,14 +51,17 @@ public class CompteBancaire {
         return solde;
     }
 
+    public void setSolde(Double solde) {
+        this.solde = solde;
+    }
 
     public void Transfert(Double montant, CompteBancaire compteDestinataire){
         if(compteDestinataire == null){
-            throw new RuntimeException("compte bancaire Destinataire null");
+            throw new FondsInsuffisantsException("compte bancaire Destinataire null");
         }
-        if(montant > solde){
+        if(montant.compareTo(solde) > 0 ){
             throw new FondsInsuffisantsException("montant doit etre inferieur ou egal de votre solde", numCompte);
-        } else if (montant <= 0) {
+        } else if (montant.compareTo(0.0) <= 0) {
             throw new FondsInsuffisantsException("montant doit etre positive strictement", numCompte);
         }else {
             solde -= montant;
